@@ -37,7 +37,7 @@
         tmpl: function() {
             var templateText = this.html();
 
-            if (typeof templateText === 'undefined') {
+            if (typeof templateText === "undefined" || templateText === null) {
                 return function () {
                     return $();
                 };
@@ -45,15 +45,17 @@
 
             var matches = templateText.match(/{[\w\d.]+}/g),
                 props = [], i, len, prop,
-                ret = function(data) {
-                    var returnText = templateText;
-                    for (i = 0, len = props.length; i < len; i++) {
-                        prop = props[i];
-                        returnText = returnText.replace(prop.regex, getData(data, prop), 'g');
+                ret = {
+                    render: function(data) {
+                        var returnText = templateText;
+                        for (i = 0, len = props.length; i < len; i++) {
+                            prop = props[i];
+                            returnText = returnText.replace(prop.regex, getData(data, prop), 'g');
+                        }
+                        returnText = returnText.replace('\r', '').replace('\n', '');
+                        returnText = $.trim(returnText);
+                        return $(returnText);
                     }
-                    returnText = returnText.replace('\r', '').replace('\n', '');
-                    returnText = $.trim(returnText);
-                    return $(returnText);
                 };
             
             if (matches && matches.length > 0) {
